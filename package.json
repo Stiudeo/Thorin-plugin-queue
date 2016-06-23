@@ -1,9 +1,8 @@
 {
   "name": "thorin-plugin-queue",
   "author": "Stiudeo",
-  "version": "1.0.1",
-  "dependencies": {
-  },
+  "version": "1.0.2",
+  "dependencies": {},
   "description": "Thorin.js queue wrapper",
   "main": "index.js",
   "license": "MIT",
