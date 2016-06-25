@@ -1,17 +1,17 @@
 {
   "name": "thorin-plugin-queue",
   "author": "Stiudeo",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "dependencies": {},
   "description": "Thorin.js queue wrapper",
   "main": "index.js",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Stiudeo/Thorin-plugin-queue"
+    "url": "https://github.com/Thorinjs/Thorin-plugin-queue"
   },
   "homepage": "http://thorinjs.com",
   "bugs": {
-    "url": "https://github.com/Stiudeo/Thorin-plugin-queue/issues"
+    "url": "https://github.com/Thorinjs/Thorin-plugin-queue/issues"
   }
 }
