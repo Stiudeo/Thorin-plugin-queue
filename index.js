@@ -16,17 +16,30 @@ module.exports = function(thorin, opt, pluginName) {
   }
   function noop(){};
   const queueObj = initQueue(thorin, opt),
+    QUEUE_CACHE = {},
     logger = thorin.logger(opt.logger);
+  QUEUE_CACHE[opt.channel] = queueObj;
+  /* Create or get a queue */
+  queueObj.get = function(queueOpt) {
+    queueOpt = thorin.util.extend(opt, queueOpt || {});
+    if(typeof QUEUE_CACHE[queueOpt.channel] === 'undefined') {
+      queueObj.create(queueOpt);
+    }
+    return QUEUE_CACHE[queueOpt.channel];
+  };
+
   /*
   * Manually a new queue object.
   * */
-  queueObj.create = function (opt) {
-    opt = thorin.util.extend(defaultOpt, opt);
-    if(opt.logFile) {
-      opt.logFile = path.normalize(path.isAbsolute(opt.logFile) ? opt.logFile : thorin.root + '/' + opt.logFile);
+  queueObj.create = function (queueOpt) {
+    queueOpt = thorin.util.extend(opt, queueOpt || {});
+    if(queueOpt.logFile) {
+      queueOpt.logFile = path.normalize(path.isAbsolute(queueOpt.logFile) ? queueOpt.logFile : thorin.root + '/' + queueOpt.logFile);
     }
-    let newQueue = initQueue(thorin, opt, true);
+    if(typeof QUEUE_CACHE[queueOpt.channel] !== 'undefined') return QUEUE_CACHE[queueOpt.channel];
+    let newQueue = initQueue(thorin, queueOpt, true);
     newQueue.run(noop);
+    QUEUE_CACHE[queueOpt.channel] = newQueue;
     return newQueue;
   }
   /*
