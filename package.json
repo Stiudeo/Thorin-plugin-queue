@@ -1,7 +1,7 @@
 {
   "name": "thorin-plugin-queue",
   "author": "UNLOQ Systems",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "dependencies": {},
   "description": "Thorin.js queue wrapper",
   "main": "index.js",

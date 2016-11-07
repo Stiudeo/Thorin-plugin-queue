@@ -2,8 +2,8 @@
 const path = require('path'),
   initQueue = require('./lib/queue.js');
 
-module.exports = function(thorin, opt, pluginName) {
-  const defaultOpt= {
+module.exports = function (thorin, opt, pluginName) {
+  const defaultOpt = {
     logger: pluginName || 'queue',
     store: null,          // the redis store to use for enqueue/dequeueing. If none is given, we work with an in-memory queue.
     channel: 'thorin.queue',    // the default channel to enqueue to /dequeue from
@@ -11,45 +11,56 @@ module.exports = function(thorin, opt, pluginName) {
     logPersist: 1000        // number of milliseconds between log persisting. This not to lose any enqueues
   };
   opt = thorin.util.extend(defaultOpt, opt);
-  if(opt.logFile) {
+  if (opt.logFile) {
     opt.logFile = path.normalize(path.isAbsolute(opt.logFile) ? opt.logFile : thorin.root + '/' + opt.logFile);
   }
-  function noop(){};
+  function noop() {
+  }
   const queueObj = initQueue(thorin, opt),
     QUEUE_CACHE = {},
     logger = thorin.logger(opt.logger);
   QUEUE_CACHE[opt.channel] = queueObj;
   /* Create or get a queue */
-  queueObj.get = function(queueOpt) {
+  queueObj.get = function (queueOpt) {
+    if (typeof queueOpt === 'string') {
+      queueOpt = {
+        channel: queueOpt
+      };
+    }
     queueOpt = thorin.util.extend(opt, queueOpt || {});
-    if(typeof QUEUE_CACHE[queueOpt.channel] === 'undefined') {
+    if (typeof QUEUE_CACHE[queueOpt.channel] === 'undefined') {
       queueObj.create(queueOpt);
     }
     return QUEUE_CACHE[queueOpt.channel];
   };
 
   /*
-  * Manually a new queue object.
-  * */
+   * Manually a new queue object.
+   * */
   queueObj.create = function (queueOpt) {
+    if (typeof queueOpt === 'string') {
+      queueOpt = {
+        channel: queueOpt
+      };
+    }
     queueOpt = thorin.util.extend(opt, queueOpt || {});
-    if(queueOpt.logFile) {
+    if (queueOpt.logFile) {
       queueOpt.logFile = path.normalize(path.isAbsolute(queueOpt.logFile) ? queueOpt.logFile : thorin.root + '/' + queueOpt.logFile);
     }
-    if(typeof QUEUE_CACHE[queueOpt.channel] !== 'undefined') return QUEUE_CACHE[queueOpt.channel];
+    if (typeof QUEUE_CACHE[queueOpt.channel] !== 'undefined') return QUEUE_CACHE[queueOpt.channel];
     let newQueue = initQueue(thorin, queueOpt, true);
     newQueue.run(noop);
     QUEUE_CACHE[queueOpt.channel] = newQueue;
     return newQueue;
   }
   /*
-  * Setup the queue plugin
-  * */
-  queueObj.setup = function(done) {
-    if(!opt.logFile) return done();
+   * Setup the queue plugin
+   * */
+  queueObj.setup = function (done) {
+    if (!opt.logFile) return done();
     try {
       thorin.util.fs.ensureFileSync(opt.logFile);
-    } catch(e) {
+    } catch (e) {
       logger.warn(`Could not create log file ${opt.logFile}`);
       return done(e);
     }
